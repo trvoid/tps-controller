@@ -4,16 +4,14 @@
 package trvoid.tps;
 
 public class App {
-    private int serverAllowedTps = 500;
-
     private void sendRequest() {
         try {
-            Thread.sleep(1000L / serverAllowedTps);
+            Thread.sleep(950L);
         } catch (InterruptedException e) {
             // DO NOTHING
         }
     }
-    public void test(int remainingCount, int allowedTps, boolean sleepOnOverAllowedTps) {
+    public long test(int remainingCount, int allowedTps, boolean sleepOnOverAllowedTps) {
         TpsInfo tpsInfo = new TpsInfo(allowedTps);
 
         int overAllowedTpsCount = 0;
@@ -22,14 +20,14 @@ public class App {
 
         while (remainingCount > 0) {
             if (remainingCount % 100 == 0) {
-                System.out.println(String.format("Remaining count = [%04d]", remainingCount));
+                //System.out.println(String.format("Remaining count = [%04d]", remainingCount));
             }
 
             if (tpsInfo.incrementRequestCount(sleepOnOverAllowedTps)) {
                 sendRequest();
                 remainingCount--;
             } else {
-                System.out.println(String.format("  ** Over allowed TPS count = [%04d]", ++overAllowedTpsCount));
+                //System.out.println(String.format("  ** Over allowed TPS count = [%04d]", ++overAllowedTpsCount));
                 try {
                     Thread.sleep(500L);
                 } catch (InterruptedException e) {
@@ -39,12 +37,23 @@ public class App {
         }
 
         long elapsedTime = System.currentTimeMillis() - startTime;
-
-        System.out.println(String.format("Elapsed time: %d millis", elapsedTime));
+        
+        return elapsedTime;
     }
 
     public static void main(String[] args) {
         App app = new App();
-        app.test(1000, 100, true);
+        
+        long elapsedTime = 0;
+        
+        for (int i = 0; i < 5; i++) {
+            System.out.println(String.format("* LOOP %04d *", i + 1));
+            
+            elapsedTime = app.test(10, 1, true);
+            System.out.println(String.format("    [TEST 1] Elapsed time: %8d ms", elapsedTime));
+
+            elapsedTime = app.test(10, 1, false);
+            System.out.println(String.format("    [TEST 2] Elapsed time: %8d ms", elapsedTime));
+        }
     }
 }
