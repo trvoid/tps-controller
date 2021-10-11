@@ -1,2 +1,3 @@
-# tps-manager
-TPS management in client/server.
+# tps-controller
+
+TPS controller in client/server.
